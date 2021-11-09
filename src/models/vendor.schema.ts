@@ -26,7 +26,7 @@ export class Vendor {
   @Prop()
   ownerName: string;
   @Prop([String])
-  category: string[];
+  foodType: string[];
   @Prop()
   pincode: string;
   @Prop()

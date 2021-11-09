@@ -7,10 +7,12 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  Param,
 } from '@nestjs/common';
 import { VendorService } from './vendor.service';
 import {
   ConfirmVendorAccount,
+  CreateVendorDto,
   VendorProfileUpdate,
   VendorServiceAvailableDto,
 } from './dto/create-vendor.dto';
@@ -19,15 +21,29 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { AuthCredentialSignInDto } from 'src/auth/dto/auth.dto';
 import { Vendor } from 'src/models/vendor.schema';
 import { GetVendor } from './getVendor/get-vendor.decorator';
-import { VendorCoverImages } from 'src/utility/file.upload.utility';
+import {
+  ProductCoverImages,
+  VendorCoverImages,
+} from 'src/utility/file.upload.utility';
+import { FoodService } from 'src/food/food.service';
+import { Food } from 'src/models/food.schema';
+import { CreateFoodDto } from 'src/food/dto/create-food.dto';
 
 @Controller('vendor')
 export class VendorController {
-  constructor(private readonly vendorService: VendorService) {}
+  constructor(
+    private readonly vendorService: VendorService,
+    private readonly foodService: FoodService,
+  ) {}
 
   @Post('/signin')
   async signin(@Body() authCredentialSignInDto: AuthCredentialSignInDto) {
     return await this.vendorService.SignIn(authCredentialSignInDto);
+  }
+
+  @Post('/signup')
+  async signup(@Body() createVendorInput: CreateVendorDto) {
+    return await this.vendorService.SignUp(createVendorInput);
   }
 
   @Post('/confirm')
@@ -37,13 +53,6 @@ export class VendorController {
     @Body() confirmVendorAccount: ConfirmVendorAccount,
   ): Promise<string> {
     return this.vendorService.Confirm(confirmVendorAccount, vendor);
-  }
-
-  @Post('/user')
-  @UseGuards(AuthGuard())
-  async test(@GetVendor() vendor: Vendor) {
-    console.log(vendor);
-    return vendor;
   }
 
   @Get('/profile')
@@ -62,7 +71,7 @@ export class VendorController {
     return this.vendorService.vendorProfileUpdate(vendor, vendorProfileUpdate);
   }
 
-  @Post('/file')
+  @Post('/cover-images')
   @UseGuards(AuthGuard())
   @UseInterceptors(
     FilesInterceptor('files[]', 20, {
@@ -74,8 +83,6 @@ export class VendorController {
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
     return this.vendorService.vendorCoverImages(vendor, files);
-    // Create a form data object
-    // return files.map((files: Express.Multer.File) => files.filename);
   }
 
   @Patch('/service')
@@ -87,18 +94,33 @@ export class VendorController {
     return this.vendorService.vendorServiceUpdate(vendor, vendorServiceDto);
   }
 
-  // @Post('/product')
-  // @UseGuards(AuthGuard())
-  // @UseInterceptors(
-  //   FilesInterceptor('images[]', 10, {
-  //     storage: ProductCoverImages,
-  //   }),
-  // )
-  // async addProduct(
-  //   @GetVendor() vendor: Vendor,
-  //   @Body() createItemDto: CreateItemDto,
-  //   @UploadedFiles() images: Array<Express.Multer.File>,
-  // ): Promise<Item> {
-  //   return this.vendorService.addProduct(vendor, createItemDto, images);
-  // }
+  @Post('/food')
+  @UseGuards(AuthGuard())
+  @UseInterceptors(
+    FilesInterceptor('images[]', 20, {
+      storage: ProductCoverImages,
+    }),
+  )
+  async VendorAddFood(
+    @GetVendor() vendor: Vendor,
+    @Body() createFoodDto: CreateFoodDto,
+    @UploadedFiles() images: Array<Express.Multer.File>,
+  ): Promise<Food> {
+    return this.foodService.addFood(vendor, createFoodDto, images);
+  }
+
+  @Get('/foods')
+  @UseGuards(AuthGuard())
+  async VendorFoods(@GetVendor() vendor: Vendor): Promise<Food[]> {
+    return this.foodService.findAllFoods(vendor);
+  }
+
+  @Get('/food/:id')
+  @UseGuards(AuthGuard())
+  async VendorFoodById(
+    @GetVendor() vendor: Vendor,
+    @Param() id: string,
+  ): Promise<Food> {
+    return this.foodService.findOneFood(vendor, id);
+  }
 }

@@ -21,7 +21,6 @@ import {
   VendorProfileUpdate,
   VendorServiceAvailableDto,
 } from './dto/create-vendor.dto';
-import { UpdateVendorDto } from './dto/update-vendor.dto';
 
 @Injectable()
 export class VendorService {
@@ -36,12 +35,12 @@ export class VendorService {
     return vendor;
   }
 
-  async createVendor(createVendorInput: CreateVendorDto): Promise<Vendor> {
+  async SignUp(createVendorInput: CreateVendorDto): Promise<Vendor> {
     const {
       name,
       address,
       pincode,
-      category,
+      foodType,
       email,
       password,
       ownerName,
@@ -65,7 +64,7 @@ export class VendorService {
         name: name,
         address: address,
         pincode: pincode,
-        category: category,
+        foodType: foodType,
         email: email,
         emailVerification: false,
         password: vendorPassword,
@@ -84,31 +83,6 @@ export class VendorService {
       return vendor;
     } catch (error) {
       throw new InternalServerErrorException();
-    }
-  }
-
-  async allVendors(): Promise<Vendor[]> {
-    try {
-      const vendors = await this.vendorModel
-        .find({})
-        .populate('foods', null, Food.name)
-        .exec();
-      if (vendors != null) {
-        return vendors;
-      }
-    } catch (error) {
-      throw new HttpException('Sorry no vendors Found!', 404);
-    }
-  }
-
-  async getVendorById(id): Promise<Vendor> {
-    try {
-      const vendor = await this.vendorModel.findOne({ id });
-      if (vendor != null) {
-        return vendor;
-      }
-    } catch (error) {
-      throw new HttpException('Sorry no vendor Found!', 404);
     }
   }
 
@@ -155,9 +129,9 @@ export class VendorService {
 
     try {
       const vendor = await this.vendorModel
-        .findOne({ email: email })
-        .populate('foods', null, Food.name)
-        .exec();
+        .findOne({ email: email });
+        // .populate('foods', null, Food.name)
+        // .exec();
       if (vendor != null) {
         return vendor;
       }
@@ -170,7 +144,7 @@ export class VendorService {
     vendor: Vendor,
     vendorProfileUpdate: VendorProfileUpdate,
   ): Promise<Vendor> {
-    const { category, name, address, phone, about } = vendorProfileUpdate;
+    const { foodType, name, address, phone, about } = vendorProfileUpdate;
     try {
       const existingVendor = await this.vendorModel.findOne({
         email: vendor.email,
@@ -180,7 +154,7 @@ export class VendorService {
         existingVendor.address = address;
         existingVendor.phone = phone;
         existingVendor.about = about;
-        existingVendor.category = category;
+        existingVendor.foodType = foodType;
         const savedResult = await existingVendor.save();
         return savedResult;
       }
@@ -231,57 +205,29 @@ export class VendorService {
       throw new HttpException('Sorry no vendor Found!', 404);
     }
   }
-
-  // async addProduct(
-  //   vendor: Vendor,
-  //   createItemDto: CreateItemDto,
-  //   images: Array<Express.Multer.File>,
-  // ): Promise<Item> {
-  //   const { name, description, category, itemType, price } = createItemDto;
-  //   const image = images.map((file: Express.Multer.File) => file.filename);
-
-  //   try {
-  //     const existingVendor = await this.vendorModel.findOne({
-  //       email: vendor.email,
-  //     });
-  //     if (existingVendor != null) {
-  //       const item = this.itemModel.create({
-  //         vendorId: existingVendor._id,
-  //         name: name,
-  //         category: category,
-  //         description: description,
-  //         itemType: itemType,
-  //         price: price,
-  //         rating: 1,
-  //         images: image,
-  //       });
-
-  //       existingVendor.items.push(await item);
-  //       await existingVendor.save();
-  //       return item;
-  //     }
-  //     throw new HttpException('Sorry Some Error Occur', 404);
-  //   } catch (error) {
-  //     throw new HttpException('Sorry no vendor Found!', 404);
-  //   }
-  // }
-  create(createVendorDto: CreateVendorDto) {
-    return 'This action adds a new vendor';
+ 
+  async allVendors(): Promise<Vendor[]> {
+    try {
+      const vendors = await this.vendorModel
+        .find({})
+        .populate('foods', null, Food.name)
+        .exec();
+      if (vendors != null) {
+        return vendors;
+      }
+    } catch (error) {
+      throw new HttpException('Sorry no vendors Found!', 404);
+    }
   }
 
-  findAll() {
-    return `This action returns all vendor`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} vendor`;
-  }
-
-  update(id: number, updateVendorDto: UpdateVendorDto) {
-    return `This action updates a #${id} vendor`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} vendor`;
+  async getVendorById(id): Promise<Vendor> {
+    try {
+      const vendor = await this.vendorModel.findOne({ id });
+      if (vendor != null) {
+        return vendor;
+      }
+    } catch (error) {
+      throw new HttpException('Sorry no vendor Found!', 404);
+    }
   }
 }

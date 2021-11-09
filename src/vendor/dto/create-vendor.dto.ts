@@ -15,8 +15,8 @@ export class CreateVendorDto {
   @ApiProperty({ type: String, description: 'ownerName' })
   ownerName: string;
   @IsArray()
-  @ApiProperty({ type: [String], description: 'category' })
-  category: string[];
+  @ApiProperty({ type: [String], description: 'foodType' })
+  foodType: string[];
   @IsString()
   @ApiProperty({ type: String, description: 'pincode' })
   pincode: string;
@@ -49,8 +49,8 @@ export class VendorProfileUpdate {
   @ApiProperty({ type: String, description: 'name' })
   name: string;
   @IsArray()
-  @ApiProperty({ type: [String], description: 'category' })
-  category: string[];
+  @ApiProperty({ type: [String], description: 'foodType' })
+  foodType: string[];
   @IsString()
   @ApiProperty({ type: String, description: 'address' })
   address: string;

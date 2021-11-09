@@ -2,7 +2,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type ItemDocument = Food & Document;
+export type FoodDocument = Food & Document;
 
 @Schema({
   toJSON: {
@@ -25,8 +25,6 @@ export class Food {
   @Prop()
   category: string;
   @Prop()
-  itemType: string;
-  @Prop()
   price: string;
   @Prop({ max: 5, min: 1 })
   rating: number;
@@ -34,4 +32,4 @@ export class Food {
   images: string[];
 }
 
-export const ItemSchema = SchemaFactory.createForClass(Food);
+export const FoodSchema = SchemaFactory.createForClass(Food);
