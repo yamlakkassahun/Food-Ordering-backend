@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -16,7 +17,7 @@ async function bootstrap() {
     .setDescription(
       'Nest Js Starter This project is a nestjs starter project that include a server side, passport, passport-jwt and swagger api documentation',
     )
-    .setVersion('1.0.0')
+    .setVersion('2.0.0')
     .build();
   //this will give the swagger module the path, api, and document
   const document = SwaggerModule.createDocument(app, options);

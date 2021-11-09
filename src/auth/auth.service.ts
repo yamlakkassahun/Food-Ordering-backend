@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   ConflictException,
   Injectable,
@@ -11,6 +12,7 @@ import { AuthCredentialDto, AuthCredentialSignInDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interface/payload.interface';
+import { Role } from 'src/models/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -46,6 +48,7 @@ export class AuthService {
         salt: salt,
         email: email,
         password: hashPassword,
+        role: Role.ADMIN,
       });
       return user;
     } catch (error) {
@@ -59,9 +62,11 @@ export class AuthService {
     const { email, password } = authCredentialSignInDto;
 
     const user = await this.FindUser(email);
+    const role = Role.ADMIN;
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const payload: JwtPayload = { email };
+      const payload: JwtPayload = { email, role };
+      
       const accessToken = await this.jwtService.sign(payload);
       return { accessToken };
     } else {

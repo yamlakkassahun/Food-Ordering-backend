@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -6,6 +7,8 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { VendorModule } from './vendor/vendor.module';
+import { CustomerModule } from './customer/customer.module';
 
 @Module({
   imports: [
@@ -24,6 +27,8 @@ import { AuthModule } from './auth/auth.module';
       exclude: ['/api*'],
     }),
     AuthModule,
+    VendorModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

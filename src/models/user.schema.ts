@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -8,6 +9,7 @@ export type UserDocument = User & Document;
     //this is to lite the response data
     transform(doc, ret) {
       delete ret.password;
+      delete ret.role;
       delete ret.__v;
       delete ret.salt;
       delete ret.createdAt;
@@ -40,6 +42,9 @@ export class User {
 
   @Prop()
   verified: boolean;
+
+  @Prop()
+  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
